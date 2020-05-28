@@ -17,6 +17,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "cors": "^2.8.5",
     "date-and-time": "^0.13.1"
   }
 }
