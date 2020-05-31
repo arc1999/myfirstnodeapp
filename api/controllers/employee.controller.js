@@ -10,11 +10,15 @@ exports.create = (req, res) => {
         });
     }
     // Create a Employee
+    var d = new Date();
+    var curmonth=d.getMonth()
     const emp = new Employee({
        id : empid,
        name : name,
        rate : rate,
-        monthly_details : [],
+       ["monthly_details." + curmonth+ ".hours"]: 0,
+       ["monthly_details." + curmonth+ ".allowances"] :0,
+       ["monthly_details." + curmonth+ ".deductions"] :0,
     });
 console.log(emp);
     // Save Note in the database
