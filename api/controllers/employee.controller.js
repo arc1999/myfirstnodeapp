@@ -51,7 +51,6 @@ exports.addhours = (req, res) => {
     set.$inc["monthly_details." + curmonth+ ".deductions"] =  req.body.deductions || 0;
     console.log(set)
     Employee.findOneAndUpdate(query,set,{new: true})
-    Employee.findOneAndUpdate(query,set,{new: true})
         .then(emp => {
             if(!emp) {
                 return res.status(404).send({
@@ -72,32 +71,34 @@ exports.addhours = (req, res) => {
 };
 exports.updatehours = (req, res) => {
     // Validate Request
-    const hours  = req.body.hours;
-    if( !hours) {
-        return res.status(400).send({
-            message: "fields can not be empty"
-        });
-    }
-    var d = new Date();
-    var curmonth=d.getMonth()
+    const {hours, allowances, deductions} = req.body;
+
+    if ( hours>=0 || allowances>=0 || deductions>=0 ){
+        var d = new Date();
+    var curmonth = d.getMonth()
     // Find note and update it with the request body
-    var query = { id: req.params.id };
+    var query = {id: req.params.id};
     var set = {$set: {}};
-    set.$set["monthly_details." + curmonth+ ".hours"] = hours;
-    set.$set["monthly_details." + curmonth+ ".allowances"] = req.body.allowances || 0;
-    set.$set["monthly_details." + curmonth+ ".deductions"] =  req.body.deductions || 0;
+    if (hours >= 0 ) {
+        set.$set["monthly_details." + curmonth + ".hours"] = hours;
+    }
+    if (allowances >= 0 ) {
+        set.$set["monthly_details." + curmonth + ".allowances"] = allowances;
+    }
+    if (deductions >= 0 ) {
+        set.$set["monthly_details." + curmonth + ".deductions"] = deductions;
+    }
     console.log(set)
-    Employee.findOneAndUpdate(query,set,{new: true})
-    Employee.findOneAndUpdate(query,set,{new: true})
+    Employee.findOneAndUpdate(query, set, {new: true})
         .then(emp => {
-            if(!emp) {
+            if (!emp) {
                 return res.status(404).send({
                     message: "Employee not found with id " + req.params.id
                 });
             }
             res.send(emp);
         }).catch(err => {
-        if(err.kind === 'ObjectId') {
+        if (err.kind === 'ObjectId') {
             return res.status(404).send({
                 message: "Employee not found with id " + req.params.id
             });
@@ -106,6 +107,11 @@ exports.updatehours = (req, res) => {
             message: err.message + req.params.id
         });
     });
+}else{
+        return res.status(400).send({
+            message: "fields can not be empty"
+        });
+    }
 };
 exports.findAll = (req, res) => {
     Employee.find()
